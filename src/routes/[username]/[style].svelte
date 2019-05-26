@@ -12,7 +12,7 @@
 
   $: hash =
     center && zoom
-      ? `${center.lat.toFixed(4)}/${center.lng.toFixed(4)}/${zoom.toFixed(2)}`
+      ? `${center.lat.toFixed(5)}/${center.lng.toFixed(5)}/${zoom.toFixed(2)}`
       : "";
 
   const { params } = $page;
@@ -23,12 +23,18 @@
       center = { lat: +lat, lng: +lng };
       zoom = +z;
     }
-    map = new mapboxgl.Map({
+
+    const options = {
       container,
-      style: `mapbox://styles/${params.username}/${params.style}`, // stylesheet location
-      center,
-      zoom
-    });
+      style: `mapbox://styles/${params.username}/${params.style}`
+    };
+
+    if (center && zoom) {
+      options.center = center;
+      options.zoom = zoom;
+    }
+
+    map = new mapboxgl.Map(options);
 
     map.addControl(
       new MapboxGeocoder({
@@ -37,14 +43,16 @@
       })
     );
 
-    map.on("load", e => {
+    map.on("styledata", e => {
       style = map.getStyle();
     });
 
     map.on("moveend", e => {
       center = map.getCenter();
       zoom = map.getZoom();
-      window.location.hash = hash;
+      window.location.replace(
+        `${window.location.origin}${window.location.pathname}#${hash}`
+      );
     });
 
     window.map = map;
