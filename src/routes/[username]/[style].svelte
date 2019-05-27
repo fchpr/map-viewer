@@ -39,9 +39,16 @@
     map.addControl(
       new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
-        mapboxgl
+        mapboxgl,
+        marker: false,
+        collapsed: true,
+        clearAndBlurOnEsc: true,
+        clearOnBlur: true
       })
     );
+
+    map.addControl(new mapboxgl.NavigationControl());
+    map.addControl(new mapboxgl.GeolocateControl());
 
     map.on("styledata", e => {
       style = map.getStyle();
